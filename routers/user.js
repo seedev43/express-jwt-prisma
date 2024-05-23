@@ -1,10 +1,10 @@
 const express = require("express")
-const { checkDuplicateEmail, checkDuplicateUsername } = require("../middlewares/verifySignUp")
 const controller = require("../controllers/user")
+const checkDuplicateEmailOrUsername = require("../middlewares/verifySignUp")
 
 const router = express.Router()
 
-router.post("/register", [checkDuplicateEmail, checkDuplicateUsername], controller.signUp)
-router.post("/login", controller.signIn)
+router.post("/register", checkDuplicateEmailOrUsername, controller.register)
+router.post("/login", controller.login)
 
 module.exports = router

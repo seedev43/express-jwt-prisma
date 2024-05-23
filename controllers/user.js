@@ -1,43 +1,52 @@
 const User = require("../models/user")
 const bcrypt = require("bcryptjs")
 const utils = require("../utils/jsonWebToken")
+const { getRandomNumber } = require("../utils/functions")
+const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 
 
-const signUp = async (req, res) => {
+const register = async (req, res) => {
     // get value from request body
     const { username, name, email, password } = req.body
     if (!username || !email || !password) {
-        return res.status(400).send({
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
             message: "username, email, and password are required"
         })
     }
     // save user to database
     try {
-        await User.create({
+        const user = await User.create({
             data: {
-                name: name ?? `User`,
+                name: name ?? `User #${getRandomNumber(1, 99)}`,
                 username: username,
                 email: email,
                 password: bcrypt.hashSync(password, 12)
             }
         })
-        // console.log(user)
-        return res.status(201).send({
-            message: "user registered successfully"
+
+        return res.status(StatusCodes.CREATED).json({
+            success: true,
+            message: "user registered successfully",
+            data: user
         })
     } catch (error) {
-        return res.status(500).send({
-            message: "something error"
+        console.log(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: "something error",
+            error: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)
         })
     }
 }
 
-const signIn = async (req, res) => {
-    const { username, email, password } = req.body
+const login = async (req, res) => {
+    const { username, password } = req.body
 
-    if (!username || !email || !password) {
-        return res.status(400).send({
-            message: "username, email, and password are required"
+    if (!username || !password) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
+            message: "username, and password are required"
         })
     }
 
@@ -49,7 +58,8 @@ const signIn = async (req, res) => {
         })
 
         if (!user) {
-            return res.status(404).send({
+            return res.status(StatusCodes.NOT_FOUND).json({
+                success: false,
                 message: "user not found"
             })
         }
@@ -59,7 +69,8 @@ const signIn = async (req, res) => {
         );
 
         if (!passwordIsValid) {
-            return res.status(401).send({
+            return res.status(StatusCodes.UNAUTHORIZED).json({
+                success: false,
                 message: "invalid password",
             })
         }
@@ -70,15 +81,17 @@ const signIn = async (req, res) => {
             username: user.username
         })
 
-        return res.status(200).send({
+        return res.status(StatusCodes.OK).json({
+            success: true,
             accessToken: token
         })
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).send({
+        // console.log(error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
             message: "something error"
         })
     }
 }
-module.exports = { signUp, signIn }
+module.exports = { register, login }

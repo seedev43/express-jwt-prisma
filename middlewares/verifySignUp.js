@@ -1,44 +1,42 @@
-const User = require("../models/user")
+const { StatusCodes } = require('http-status-codes');
+const prisma = require('../config/prisma');
 
-const checkDuplicateEmail = async (req, res, next) => {
+const checkDuplicateEmailOrUsername = async (req, res, next) => {
     try {
-        const user = await User.findUnique({
-            where: {
-                email: req.body.email
-            }
-        })
-        // console.log(user);
-        if (user) {
-            return res.status(400).send({
+        const { email, username } = req.body;
+
+        // Check for existing email
+        const emailUser = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (emailUser) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
                 message: "email is already in use"
-            })
+            });
         }
-        next()
+
+        // Check for existing username
+        const usernameUser = await prisma.user.findUnique({
+            where: { username }
+        });
+
+        if (usernameUser) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: "username is already in use"
+            });
+        }
+
+        next();
     } catch (error) {
-        return res.status(500).send({
-            message: "something error"
-        })
+        console.error('Error checking duplicate email or username:', error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: "something went wrong"
+        });
     }
 }
 
-const checkDuplicateUsername = async (req, res, next) => {
-    try {
-        const user = await User.findUnique({
-            where: {
-                username: req.body.username
-            }
-        })
-        // console.log(user);
-        if (user) {
-            return res.status(400).send({
-                message: "username is already in use"
-            })
-        }
-        next()
-    } catch (error) {
-        return res.status(500).send({
-            message: "something error"
-        })
-    }
-}
-module.exports = { checkDuplicateEmail, checkDuplicateUsername }
+module.exports = checkDuplicateEmailOrUsername;

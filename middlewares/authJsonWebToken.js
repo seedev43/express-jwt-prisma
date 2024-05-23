@@ -5,7 +5,7 @@ const verifyToken = (req, res, next) => {
 
     // console.log(token);
     if (token?.split(" ")[0] !== 'Bearer') {
-        return res.status(500).send({
+        return res.status(500).json({
             message: "bearer token is missing"
         });
     }
@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
     token = token.split(" ")[1]
 
     if (!token) {
-        return res.status(403).send({
+        return res.status(403).json({
             message: "no token provided",
         })
     }
@@ -27,7 +27,7 @@ const verifyToken = (req, res, next) => {
         next()
 
     } catch (error) {
-        return res.status(401).send({
+        return res.status(401).json({
             message: "unauthorized",
         })
     }
