@@ -10,15 +10,35 @@ const checkDuplicateEmail = async (req, res, next) => {
         // console.log(user);
         if (user) {
             return res.status(400).send({
-                message: "Failed! email is already in use!"
+                message: "email is already in use"
             })
         }
         next()
     } catch (error) {
         return res.status(500).send({
-            message: "Something error!"
+            message: "something error"
         })
     }
 }
 
-module.exports = { checkDuplicateEmail }
+const checkDuplicateUsername = async (req, res, next) => {
+    try {
+        const user = await User.findUnique({
+            where: {
+                username: req.body.username
+            }
+        })
+        // console.log(user);
+        if (user) {
+            return res.status(400).send({
+                message: "username is already in use"
+            })
+        }
+        next()
+    } catch (error) {
+        return res.status(500).send({
+            message: "something error"
+        })
+    }
+}
+module.exports = { checkDuplicateEmail, checkDuplicateUsername }

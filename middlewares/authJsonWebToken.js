@@ -1,31 +1,34 @@
 const jwt = require("jsonwebtoken")
 
 const verifyToken = (req, res, next) => {
-    let tokenHeader = req.header('Authorization');
+    let token = req.header('Authorization');
 
-    if (tokenHeader?.split(' ')[0] !== 'Bearer') {
+    // console.log(token);
+    if (token?.split(" ")[0] !== 'Bearer') {
         return res.status(500).send({
-            message: "Incorrect token format"
+            message: "bearer token is missing"
         });
     }
 
-    let token = tokenHeader?.split(' ')[1];
+    token = token.split(" ")[1]
 
     if (!token) {
         return res.status(403).send({
-            message: "No token provided!",
+            message: "no token provided",
         })
     }
 
+    // console.log(token);
     try {
-        const decoded = jwt.verify(token, process.env.SECRET_KEY)
+        const user = jwt.verify(token, process.env.SECRET_KEY)
 
-        req.userId = decoded.id
+        // console.log(user);
+        req.user = user
         next()
 
     } catch (error) {
         return res.status(401).send({
-            message: "Unauthorized!",
+            message: "unauthorized",
         })
     }
 }

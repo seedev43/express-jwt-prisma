@@ -1,7 +1,7 @@
 const dotenv = require("dotenv")
 const express = require("express")
 const cors = require("cors")
-const router = require("./routers")
+const indexRoute = require("./routers")
 const userRoute = require("./routers/user")
 
 const app = express()
@@ -14,7 +14,7 @@ app.use(cors())
 // parse requests of content-type - application/json
 app.use(express.json())
 
-app.use(router)
+app.use("/", indexRoute)
 app.use("/user", userRoute)
 
 app.listen(PORT, () => {

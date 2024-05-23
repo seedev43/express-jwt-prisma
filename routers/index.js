@@ -7,8 +7,8 @@ router.get("/", (req, res) => {
     return res.send("Hello World")
 })
 
-router.get("/access-jwt", verifyToken, (req, res) => {
-    return res.send("oke masuk")
+router.get("/dashboard", verifyToken, (req, res) => {
+    return res.send("halaman dashboard")
 })
 
 module.exports = router

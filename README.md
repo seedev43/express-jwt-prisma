@@ -4,6 +4,6 @@
 
 <code>npm install</code>
 
-<code>npx prisma migrate dev --name init</code>
+<code>npm run prisma:migrate</code>
 
 <code>npm start</code>
