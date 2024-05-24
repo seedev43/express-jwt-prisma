@@ -1,7 +1,7 @@
 const request = require("supertest");
 const prisma = require("../config/prisma");
 const express = require("express");
-const router = require("../routers/user");
+const router = require("../routes/user");
 
 
 describe('POST /user/register', () => {
